@@ -48,6 +48,13 @@
 
       return dow;
     }).property(),
+    time: Ember.computed(function(name, value) {
+      if (arguments.length === 2) {
+        this.setTime(value);
+      }
+
+      return this.getTime();
+    }).property().volatile(),
 
     add: function(i, gran) {
       add(this, i, gran);
