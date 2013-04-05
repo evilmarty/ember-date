@@ -65,6 +65,20 @@ test("`D` returns new date object set with the given millisecond", function() {
   equal(date.getMilliseconds(), 678);
 });
 
+test("`D` returns new date object from a string", function() {
+  expect(7);
+
+  var date = Ember.D('2013/04/06 9:21');
+
+  equal(date.getFullYear(), 2013);
+  equal(date.getMonth(), 3);
+  equal(date.getDate(), 6);
+  equal(date.getHours(), 9);
+  equal(date.getMinutes(), 21);
+  equal(date.getSeconds(), 0);
+  equal(date.getMilliseconds(), 0);
+});
+
 test("`timezone` returns a formatted integer where first 2 digits are hours and last 2 are minutes", function() {
   expect(1);
 

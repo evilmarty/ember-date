@@ -287,7 +287,9 @@
   var getDate = function() {
     var date = arguments[0], i, m, v;
 
-    if (!(date instanceof Date)) {
+    if (typeof(date) === 'string') {
+      return new Date(date);
+    } else if (!(date instanceof Date)) {
       date = new Date();
       for (i = 0; i < arguments.length; ++i) {
         v = arguments[i];
