@@ -408,7 +408,7 @@ test("`fmt` returns the month", function() {
 
   var date = Ember.D(new Date(2013, 0, 15, 13, 45, 32, 567));
 
-  equal(date.fmt('%m'), '1');
+  equal(date.fmt('%m'), '01');
 });
 
 test("`fmt` returns the name of the month", function() {

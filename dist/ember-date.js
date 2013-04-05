@@ -1,5 +1,5 @@
 (function() {
-  var get = Ember.get, set = Ember.set;
+  var get = Ember.get, set = Ember.set, loc = Ember.String.loc;
 
   var add = function(date, i, gran) {
     var val = get(date, gran);
@@ -15,19 +15,126 @@
     return hours > 12 ? hours - 12 : hours;
   };
 
-  Ember.String.lpad = function(str, len, pad) {
+  var lpad = function(str, len, pad) {
     pad = pad || ' ';
     str = str.toString();
     while (str.length < len) { str = pad + str; }
     return str;
   };
-  Ember.String.rpad = function(str, len, pad) {
+
+  var rpad = function(str, len, pad) {
     pad = pad || ' ';
     str = str.toString();
     while (str.length < len) { str = str + pad; }
     return str;
   };
 
+  Ember.String.lpad = lpad;
+  Ember.String.rpad = rpad;
+
+  var fmt = function(date, s) {
+    switch (s) {
+      case 'Y':
+        return get(date, 'year');
+      case 'C':
+        return parseInt(get(date, 'year') / 100);
+      case 'y':
+        return get(date, 'year') % 100;
+      case 'm':
+        return lpad(get(date, 'month') + 1, 2, '0');
+      case 'B':
+        return loc(Ember.Date.MONTHS[get(date, 'month')]);
+      case 'b':
+        return loc(Ember.Date.MONTHS_ABBR[get(date, 'month')]);
+      case 'd':
+        return get(date, 'day');
+      case 'e':
+        return date.fmt('%0d');
+      case 'j':
+        return null;
+      case 'H':
+        return lpad(get(date, 'hour'), 2, '0');
+      case 'k':
+        return date.fmt('%_H')
+      case 'I':
+        return lpad(twelvehour(get(date, 'hour')), 2, '0');
+      case 'l':
+        return date.fmt('%_I');
+      case 'P':
+        return loc(get(date, 'hour') > 12 ? 'PM' : 'AM').toLowerCase();
+      case 'p':
+        return date.fmt('%^P');
+      case 'M':
+        return lpad(get(date, 'minute'), 2, '0');
+      case 'S':
+        return lpad(get(date, 'second'), 2, '0');
+      case 'L':
+        return lpad(get(date, 'millisecond'), 3, '0');
+      case 'z':
+        var tz = get(date, 'timezone');
+        return tz === 0 ? 'GMT' : (tz < 0 ? tz : '+' + tz);
+      case 'A':
+        return loc(Ember.Date.WEEKDAYS[get(date, 'dayOfWeek')]);
+      case 'a':
+        return loc(Ember.Date.WEEKDAYS_ABBR[get(date, 'dayOfWeek')]);
+      case 'u':
+        var dow = get(date, 'dayOfWeek');
+        if (dow === 0) { dow = 7; }
+        return dow;
+      case 'w':
+        return get(date, 'dayOfWeek');
+      case 's':
+        return date.getTime();
+
+      case 'n':
+        return "\n";
+      case 't':
+        return "\t";
+      case '%':
+        return '%';
+
+      case 'c':
+        return date.fmt(date, '%a %b %e %T %Y');
+      case 'D':
+      case 'x':
+        return date.fmt(date, '%m/%d/%y');
+      case 'F':
+        return date.fmt(date, '%Y-%m-%d');
+      case 'v':
+        return date.fmt(date, '%e-%^b-%Y');
+      case 'R':
+        return date.fmt(date, '%I:%M:%S %p');
+      case 'T':
+      case 'X':
+        return date.fmt(date, '%H:%M');
+    }
+  };
+
+  var stripRegexp = /^[0 ]+/;
+  var mod = function(s, m, w) {
+    var i;
+
+    s = s.toString();
+    if (!w) { w = 2; }
+
+    for (i = 0; i < m.length; ++i) {
+      switch (m[i]) {
+        case '^':
+          s = s.toUpperCase();
+          break;
+        case '0':
+          s = lpad(s.replace(stripRegexp, ''), w, '0');
+          break;
+        case '_':
+          s = lpad(s.replace(stripRegexp, ''), w, ' ');
+          break;
+        case '-':
+          s = s.replace(stripRegexp, '');
+          break;
+      }
+    }
+    return s;
+  };
 
   var propertyMethod = function(method) {
     return Ember.computed(function(name, value) {
@@ -148,82 +255,8 @@
       var date = this;
 
       format = format.toString();
-      return format.replace(/%([a-z%])/gi, function(_, s) {
-        switch (s) {
-          case 'Y':
-            return get(date, 'year');
-          case 'C':
-            return parseInt(get(date, 'year') / 100);
-          case 'y':
-            return get(date, 'year') % 100;
-          case 'm':
-            return get(date, 'month') + 1;
-          case 'B':
-            return Ember.String.loc(Ember.Date.MONTHS[get(date, 'month')]);
-          case 'b':
-            return Ember.String.loc(Ember.Date.MONTHS_ABBR[get(date, 'month')]);
-          case 'd':
-            return get(date, 'day');
-          case 'e':
-            return Ember.String.lpad(get(date, 'day'), 2, '0');
-          case 'j':
-            return null;
-          case 'H':
-            return Ember.String.lpad(get(date, 'hour'), 2, '0');
-          case 'k':
-            return Ember.String.lpad(get(date, 'hour'), 2, ' ');
-          case 'I':
-            return Ember.String.lpad(twelvehour(get(date, 'hour')), 2, '0');
-          case 'l':
-            return Ember.String.lpad(twelvehour(get(date, 'hour')), 2, ' ');
-          case 'P':
-            return Ember.String.loc(get(date, 'hour') > 12 ? 'PM' : 'AM').toLowerCase();
-          case 'p':
-            return Ember.String.loc(get(date, 'hour') > 12 ? 'PM' : 'AM').toUpperCase();
-          case 'M':
-            return Ember.String.lpad(get(date, 'minute'), 2, '0');
-          case 'S':
-            return Ember.String.lpad(get(date, 'second'), 2, '0');
-          case 'L':
-            return Ember.String.lpad(get(date, 'millisecond'), 3, '0');
-          case 'z':
-            var tz = get(date, 'timezone');
-            return tz === 0 ? 'GMT' : (tz < 0 ? tz : '+' + tz);
-          case 'A':
-            return Ember.String.loc(Ember.Date.WEEKDAYS[get(date, 'dayOfWeek')]);
-          case 'a':
-            return Ember.String.loc(Ember.Date.WEEKDAYS_ABBR[get(date, 'dayOfWeek')]);
-          case 'u':
-            var dow = get(date, 'dayOfWeek');
-            if (dow === 0) { dow = 7; }
-            return dow;
-          case 'w':
-            return get(date, 'dayOfWeek');
-          case 's':
-            return date.getTime();
-
-          case 'n':
-            return "\n";
-          case 't':
-            return "\t";
-          case '%':
-            return '%';
-
-          case 'c':
-            return date.fmt(date, '%a %b %e %T %Y');
-          case 'D':
-          case 'x':
-            return date.fmt(date, '%m/%d/%y');
-          case 'F':
-            return date.fmt(date, '%Y-%m-%d');
-          case 'v':
-            return date.fmt(date, '%e-%^b-%Y');
-          case 'R':
-            return date.fmt(date, '%I:%M:%S %p');
-          case 'T':
-          case 'X':
-            return date.fmt(date, '%H:%M');
-        }
+      return format.replace(/%([^a-z1-9]*)([1-9][0-9]*)?([a-z%])/gi, function(_, m, w, s) {
+        return mod(fmt(date, s), m, w);
       });
     },
 
