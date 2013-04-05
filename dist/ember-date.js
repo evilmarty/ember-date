@@ -164,8 +164,7 @@
       }
 
       return dow;
-    }).property(),
-
+    }).property().volatile(),
     time: Ember.computed(function(name, value) {
       if (arguments.length === 2) {
         this.setTime(value);
@@ -178,7 +177,6 @@
       add(this, i, gran);
       return this;
     },
-
     subtract: function(i, gran) {
       subtract(this, i, gran);
       return this;
@@ -192,25 +190,21 @@
         millisecond: 0
       });
     },
-
     beginningOfWeek: function() {
       var date = this.beginningOfDay();
       set(date, 'dayOfWeek', 0);
       return date;
     },
-
     beginningOfMonth: function() {
       var date = this.beginningOfDay();
       set(date, 'day', 1);
       return date;
     },
-
     beginningOfYear: function() {
       var date = this.beginningOfMonth();
       set(date, 'month', 0);
       return date;
     },
-
     endOfDay: function() {
       return this.copy().setProperties({
         hour: 23,
@@ -219,20 +213,17 @@
         millisecond: 999
       });
     },
-
     endOfWeek: function() {
       var date = this.endOfDay();
       set(date, 'dayOfWeek', 6);
       return date;
     },
-
     endOfMonth: function() {
       var date = this.endOfDay();
       add(date, 1, 'month');
       set(date, 'day', 0);
       return date;
     },
-
     endOfYear: function() {
       var date = this.copy();
       set(date, 'month', 11);
@@ -260,6 +251,9 @@
       });
     },
 
+    isValid: Ember.computed(function() {
+      return !isNaN(this);
+    }).property().volatile(),
 
     year: propertyMethod('FullYear'),
     month: propertyMethod('Month'),

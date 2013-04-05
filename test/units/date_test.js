@@ -391,6 +391,22 @@ test("`copy` returns a copy of the date", function() {
   equal(copy.getDate(), 19);
 });
 
+test("`isValid` returns true when is a valid date", function() {
+  expect(1);
+
+  var date = Ember.D(new Date());
+
+  equal(date.get('isValid'), true);
+});
+
+test("`isValid` returns false when is a invalid date", function() {
+  expect(1);
+
+  var date = Ember.D(new Date('2013-13-13'));
+
+  equal(date.get('isValid'), false);
+});
+
 module("Ember.Date - Formatting");
 
 test("`fmt` returns the full year", function() {

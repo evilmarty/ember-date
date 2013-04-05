@@ -85,6 +85,9 @@ To extend a date object manually simply pass it to `Ember.D`. If no arguments ar
 ### `fmt`
 > Returns a string representation of the date based on the given format. For a list of available options refer to ruby's [Time#strftime](http://www.ruby-doc.org/core-1.9.3/Time.html#strtime)
 
+### `isValid`
+> Returns a boolean as to whether the date is valid or not.
+
 ## Internationalisation
 
 Ember Date has basic support for localisation for textual representation, but not formatting. It uses passes months and days of the week to `Ember.String.loc` for localisation.
