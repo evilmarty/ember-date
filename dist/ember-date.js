@@ -29,6 +29,16 @@
   };
 
 
+  var propertyMethod = function(method) {
+    return Ember.computed(function(name, value) {
+      if (arguments.length === 2) {
+        this['set' + method](value);
+      }
+
+      return this['get' + method]();
+    }).property().volatile();
+  };
+
   Ember.Date = Ember.Mixin.create(Ember.Observable, Ember.Copyable, {
     timezone: Ember.computed(function() {
       var offset = this.getTimezoneOffset(),
@@ -215,38 +225,25 @@
             return date.fmt(date, '%H:%M');
         }
       });
-    }
+    },
+
+
+    year: propertyMethod('FullYear'),
+    month: propertyMethod('Month'),
+    day: propertyMethod('Date'),
+    hour: propertyMethod('Hours'),
+    minute: propertyMethod('Minutes'),
+    second: propertyMethod('Seconds'),
+    millisecond: propertyMethod('Milliseconds'),
+
+    years: Ember.computed.alias('year'),
+    months: Ember.computed.alias('month'),
+    days: Ember.computed.alias('day'),
+    hours: Ember.computed.alias('hour'),
+    minutes: Ember.computed.alias('minute'),
+    seconds: Ember.computed.alias('second'),
+    milliseconds: Ember.computed.alias('millisecond')
   });
-
-  var mappings = {
-    'year': 'FullYear',
-    'month': 'Month',
-    'day': 'Date',
-    'hour': 'Hours',
-    'minute': 'Minutes',
-    'second': 'Seconds',
-    'millisecond': 'Milliseconds'
-  }, definitions = {};
-
-  for (var name in mappings) {
-    var method = mappings[name],
-        pluralName = name + 's';
-
-    mappings[pluralName] = mappings[name];
-
-    definitions[name] = Ember.computed(function(key, value) {
-      var methodName = mappings[key];
-
-      if (arguments.length === 2) {
-        this['set' + methodName](value);
-      }
-
-      return this['get' + methodName]();
-    }).property().volatile();
-    definitions[pluralName] = Ember.alias(name);
-  }
-
-  Ember.Date.reopen(definitions);
 
   Ember.Date.MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   Ember.Date.MONTHS_ABBR = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
