@@ -311,4 +311,16 @@
       return getDate.apply(null, arguments);
     };
   }
+
+  Ember.Handlebars.registerBoundHelper('date', function(date) {
+    Ember.assert('You must pass a date object to the `date` helper.', arguments.length > 1);
+
+    var options = [].pop.call(arguments),
+        data = options.data,
+        props = data.properties;
+
+    date = Ember.D(date);
+
+    return date.fmt(props[1]);
+  });
 })();

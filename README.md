@@ -88,6 +88,16 @@ To extend a date object manually simply pass it to `Ember.D`. If no arguments ar
 ### `isValid`
 > Returns a boolean as to whether the date is valid or not.
 
+## Handlebars
+
+A helper method is available as a convenience for displaying and formatting dates.
+
+```handlebars
+{{date createdAt "%Y-%m-%d"}}
+```
+
+The above will output the date to the specified format.
+
 ## Internationalisation
 
 Ember Date has basic support for localisation for textual representation, but not formatting. It uses passes months and days of the week to `Ember.String.loc` for localisation.

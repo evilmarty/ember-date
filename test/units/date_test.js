@@ -606,3 +606,63 @@ test("`fmt` returns a string representation of the date when nothing is given", 
 
   equal(date.fmt(), date.toString());
 });
+
+var view;
+
+var appendView = function() {
+  Ember.run(function() { view.appendTo('#qunit-fixture'); });
+};
+
+module("Ember.Date - Handlebars helper", {
+  teardown: function() {
+    Ember.run(function() {
+      if (view) {
+        view.destroy();
+      }
+    });
+  }
+});
+
+test("`{{date}}` handlebars helper without format", function() {
+  var date = new Date;
+
+  view = Ember.View.create({
+    controller: Ember.Object.create({createdAt: date}),
+    template: Ember.Handlebars.compile('{{date createdAt}}')
+  });
+
+  appendView();
+
+  equal(view.$().text(), date.toString());
+});
+
+test("`{{date}}` handlebars helper with format", function() {
+  var date = new Date;
+
+  view = Ember.View.create({
+    controller: Ember.Object.create({createdAt: date}),
+    template: Ember.Handlebars.compile('{{date createdAt "%Y"}}')
+  });
+
+  appendView();
+
+  equal(view.$().text(), date.getFullYear());
+});
+
+test("`{{date}}` handlebars helper updates when variable changes", function() {
+  var first = new Date(2013, 0, 15, 5, 45, 7, 567),
+      second = new Date(2014, 0, 15, 5, 45, 7, 567);
+
+  view = Ember.View.create({
+    controller: Ember.Object.create({createdAt: first}),
+    template: Ember.Handlebars.compile('{{date createdAt "%Y"}}')
+  });
+
+  appendView();
+
+  Ember.run(function() {
+    view.controller.set('createdAt', second);
+  });
+
+  equal(view.$().text(), second.getFullYear());
+});
