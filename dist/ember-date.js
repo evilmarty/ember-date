@@ -245,6 +245,10 @@
     fmt: function(format) {
       var date = this;
 
+      if (Ember.isNone(format)) {
+        return date.toString();
+      }
+
       format = format.toString();
       return format.replace(/%([^a-z1-9]*)([1-9][0-9]*)?([a-z%])/gi, function(_, m, w, s) {
         return mod(fmt(date, s), m, w);

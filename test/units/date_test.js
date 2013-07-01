@@ -598,3 +598,11 @@ test("`fmt` returns a percentage sign", function() {
 
   equal(date.fmt('%%'), '%');
 });
+
+test("`fmt` returns a string representation of the date when nothing is given", function() {
+  expect(1);
+
+  var date = Ember.D(new Date(2013, 0, 15, 5, 45, 7, 567));
+
+  equal(date.fmt(), date.toString());
+});
